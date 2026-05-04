@@ -1,31 +1,83 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ChevronUp, Menu } from 'lucide-react'
-import { useState } from 'react'
+import { ChevronUp, Menu, X } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
-import { navigation } from '../data/navigation'
 import { routeTitles } from '../utils/routes'
+
+const mainLinks = [
+  { label: 'О министерстве', path: '/about' },
+  { label: 'Руководство', path: '/leadership' },
+  { label: 'Структура', path: '/structure' },
+  { label: 'Документы', path: '/documents' },
+  { label: 'Новости', path: '/news' },
+  { label: 'Контакты', path: '/contacts' },
+  { label: 'Обращения граждан', path: '/appeals' }
+]
+
+const megaCards = [
+  { label: 'Открытость', title: 'Открытый бюджет', text: 'Документы, данные, визуализация и общественное участие.', path: '/open-budget' },
+  { label: 'Процесс', title: 'Бюджетный процесс', text: 'Этапы подготовки, рассмотрения, утверждения и исполнения бюджета.', path: '/budget' },
+  { label: 'Отчеты', title: 'Исполнение бюджета', text: 'Ежемесячные, квартальные и годовые отчеты с выгрузками данных.', path: '/budget/execution' },
+  { label: 'Устойчивость', title: 'Государственный долг', text: 'Долговая политика, структура долга, динамика и документы.', path: '/budget/debt' }
+]
 
 export const AppLayout = () => {
   const [open, setOpen] = useState(false)
-  const [mega, setMega] = useState(false)
+  const [megaOpen, setMegaOpen] = useState(false)
+  const [budgetOpen, setBudgetOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
   const segments = location.pathname.split('/').filter(Boolean)
   const crumbs = segments.map((_, i) => '/' + segments.slice(0, i + 1).join('/'))
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10)
+    onScroll()
+    window.addEventListener('scroll', onScroll)
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
+  useEffect(() => {
+    setOpen(false)
+    setMegaOpen(false)
+    setBudgetOpen(false)
+  }, [location.pathname])
+
+  const isBudgetActive = useMemo(() => ['/budget', '/budget/execution', '/budget/debt', '/open-budget'].some((p) => location.pathname === p), [location.pathname])
+
   return (
-    <div className='min-h-screen bg-[radial-gradient(circle_at_top_left,_#dbeafe_0,_transparent_35%),linear-gradient(#fff,#f1f5f9)]'>
-      <div className='bg-slate-950 px-4 py-2 text-xs text-white'>Официальный портал МИНФИН48</div>
-      <header className='sticky top-0 z-20 border-b border-white/60 bg-white/80 backdrop-blur-xl'>
-        <div className='mx-auto flex max-w-6xl items-center justify-between p-3'>
-          <Link to='/' className='font-black text-blue-900'>МИНФИН48</Link>
-          <button className='md:hidden' onClick={() => setOpen(!open)}><Menu /></button>
-          <nav className='hidden items-center gap-2 md:flex'>
-            {navigation.slice(0, 5).map((n) => <NavLink key={n.path} to={n.path} className='rounded-full px-3 py-2 text-sm font-semibold hover:bg-blue-50'>{n.label}</NavLink>)}
-            <div onMouseEnter={() => setMega(true)} onMouseLeave={() => setMega(false)} className='relative'>
-              <button className='rounded-full px-3 py-2 text-sm font-semibold hover:bg-blue-50'>Разделы</button>
-              <AnimatePresence>{mega && <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} exit={{opacity:0,y:6}} className='absolute right-0 top-10 grid w-80 grid-cols-2 gap-2 rounded-3xl border bg-white p-3 shadow-2xl'>{navigation.slice(5).map((n)=><NavLink key={n.path} to={n.path} className='rounded-2xl p-2 text-sm hover:bg-slate-50'>{n.label}</NavLink>)}</motion.div>}</AnimatePresence>
+    <div className='site-shell min-h-screen'>
+      <div className='topbar'>
+        <div className='topbar-inner'>
+          <span>Официальный портал Министерства финансов Липецкой области</span>
+          <div className='topbar-links'>
+            <a href='#'>Версия для слабовидящих</a>
+            <a href='#'>Карта сайта</a>
+          </div>
+        </div>
+      </div>
+      <header className={`site-header ${scrolled ? 'scrolled' : ''}`}>
+        <div className='header-inner'>
+          <Link to='/' className='logo-link'>МИНФИН48</Link>
+          <button className='mobile-menu-toggle md:hidden' onClick={() => setOpen((v) => !v)} aria-expanded={open} aria-controls='main-nav'>{open ? <X size={18}/> : <Menu size={18}/>}</button>
+          <nav id='main-nav' className={`site-nav ${open ? 'open' : ''}`}>
+            {mainLinks.map((n) => <NavLink key={n.path} to={n.path} className={({isActive})=>`nav-pill ${isActive ? 'active' : ''}`}>{n.label}</NavLink>)}
+            <div className={`mega-item ${megaOpen ? 'open' : ''}`} onMouseEnter={() => setMegaOpen(true)} onMouseLeave={() => setMegaOpen(false)}>
+              <button className={`mega-trigger ${isBudgetActive ? 'active' : ''}`} onClick={() => setMegaOpen((v)=>!v)} aria-expanded={megaOpen}>Бюджет ▾</button>
+              <div className='mega-panel'>
+                {megaCards.map((card)=><NavLink key={card.path} to={card.path} className='mega-card'><small>{card.label}</small><strong>{card.title}</strong><span>{card.text}</span></NavLink>)}
+              </div>
             </div>
           </nav>
+          <div className='header-actions'>
+            <div className={`webbudget-entry ${budgetOpen ? 'open' : ''}`} onMouseEnter={() => setBudgetOpen(true)} onMouseLeave={() => setBudgetOpen(false)}>
+              <button className={`nav-pill webbudget-trigger ${location.pathname === '/open-budget' ? 'active': ''}`} onClick={() => setBudgetOpen((v)=>!v)} aria-expanded={budgetOpen}>Электронный бюджет</button>
+              <div className='webbudget-menu'>
+                <NavLink to='/open-budget'><small>Система</small><strong>Открытый бюджет</strong><span>Данные и визуализации для граждан.</span></NavLink>
+                <NavLink to='/budget/execution'><small>Отчеты</small><strong>Исполнение бюджета</strong><span>Квартальные и годовые отчеты исполнения.</span></NavLink>
+              </div>
+            </div>
+          </div>
         </div>
       </header>
       <div className='mx-auto max-w-6xl p-4'>
