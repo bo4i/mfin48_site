@@ -1,8 +1,8 @@
-export const documents = Array.from({ length: 12 }).map((_, i) => ({
-  id: i + 1,
-  title: `Приказ/Постановление №${100 + i}`,
-  type: i % 2 ? 'Приказ' : 'Постановление',
-  year: 2023 + (i % 4),
-  status: i % 3 ? 'Действует' : 'Проект',
-  format: i % 2 ? 'PDF' : 'DOCX'
-}))
+export const documents = [2026,2025,2024].flatMap((year, y) => Array.from({ length: 8 }).map((_, i) => ({
+  id: y*10+i+1,
+  title: `${['Закон','Постановление','Приказ','Методические рекомендации'][i%4]} о бюджетной политике №${year}-${i+1}`,
+  type: ['Закон','Постановление','Приказ','Методика'][i%4],
+  year,
+  status: i%5===0 ? 'Проект' : 'Действует',
+  format: i%2 ? 'PDF' : 'DOCX'
+})))

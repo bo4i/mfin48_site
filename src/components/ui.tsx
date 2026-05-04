@@ -1,13 +1,13 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import type { ReactNode } from 'react'
 
-export const Button = ({ children }: { children: ReactNode }) => <button className='rounded-xl bg-blue-700 px-4 py-2 text-white'>{children}</button>
-export const Card = ({ children }: { children: ReactNode }) => <div className='rounded-2xl bg-white p-4 shadow-sm'>{children}</div>
-export const SectionHeader = ({ title, subtitle }: { title: string; subtitle?: string }) => <div><h2 className='text-2xl font-bold'>{title}</h2>{subtitle && <p className='text-slate-600'>{subtitle}</p>}</div>
-export const PageHero = ({ title, description }: { title: string; description: string }) => <section className='rounded-2xl bg-gradient-to-r from-blue-900 to-blue-700 p-6 text-white'><h1 className='text-3xl font-bold'>{title}</h1><p className='mt-2'>{description}</p></section>
-export const SearchInput = ({ value, onChange, placeholder='Поиск' }: { value: string; onChange: (v: string)=>void; placeholder?: string }) => <input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} className='w-full rounded-xl border p-2' />
-export const FilterPill = ({ active, label, onClick }: { active: boolean; label: string; onClick: ()=>void }) => <button onClick={onClick} className={`rounded-full px-3 py-1 text-sm ${active ? 'bg-blue-700 text-white' : 'bg-slate-200'}`}>{label}</button>
-export const KpiCard = ({ label, value }: { label: string; value: string }) => <Card><p className='text-slate-500'>{label}</p><p className='text-xl font-bold'>{value}</p></Card>
-export const BudgetChart = ({ title }: { title: string }) => <Card><p className='font-semibold'>{title}</p><div className='mt-2 h-36 rounded bg-slate-100' /></Card>
+export const Button = ({ children }: { children: ReactNode }) => <button className='rounded-full bg-blue-700 px-5 py-2.5 font-semibold text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-800'>{children}</button>
+export const Card = ({ children, className = '' }: { children: ReactNode; className?: string }) => <motion.div whileHover={{ y: -6 }} className={`rounded-3xl border border-slate-100 bg-white/95 p-5 shadow-xl shadow-slate-200/60 ${className}`}>{children}</motion.div>
+export const SectionHeader = ({ title, subtitle }: { title: string; subtitle?: string }) => <div className='space-y-1'><h2 className='text-3xl font-black tracking-tight text-slate-900'>{title}</h2>{subtitle && <p className='max-w-3xl text-slate-600'>{subtitle}</p>}</div>
+export const PageHero = ({ title, description }: { title: string; description: string }) => <section className='rounded-[2rem] border border-white/50 bg-gradient-to-r from-blue-950 via-blue-800 to-blue-700 p-10 text-white shadow-2xl'><h1 className='text-4xl font-black md:text-5xl'>{title}</h1><p className='mt-4 max-w-3xl text-blue-100'>{description}</p></section>
+export const SearchInput = ({ value, onChange, placeholder='Поиск' }: { value: string; onChange: (v: string)=>void; placeholder?: string }) => <input value={value} onChange={e=>onChange(e.target.value)} placeholder={placeholder} className='w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm' />
+export const FilterPill = ({ active, label, onClick }: { active: boolean; label: string; onClick: ()=>void }) => <button onClick={onClick} className={`rounded-full px-4 py-2 text-sm font-semibold transition ${active ? 'bg-blue-700 text-white' : 'bg-white text-slate-600 shadow'}`}>{label}</button>
+export const KpiCard = ({ label, value }: { label: string; value: string }) => { const reduced = useReducedMotion(); return <Card><p className='text-slate-500'>{label}</p><motion.p initial={{ opacity:0, y: reduced ? 0 : 8 }} whileInView={{ opacity:1, y:0 }} className='text-3xl font-black text-blue-900'>{value}</motion.p></Card> }
+export const BudgetChart = ({ title }: { title: string }) => <Card><p className='font-bold'>{title}</p><div className='mt-3 h-40 rounded-2xl bg-gradient-to-r from-blue-100 via-indigo-50 to-red-50' /></Card>
 export const EmptyState = ({ text }: { text: string }) => <Card><p className='text-slate-500'>{text}</p></Card>
-export const Fade = ({ children }: { children: ReactNode }) => <motion.div initial={{opacity:0,y:8}} animate={{opacity:1,y:0}} transition={{duration:0.25}}>{children}</motion.div>
+export const Fade = ({ children }: { children: ReactNode }) => { const reduced = useReducedMotion(); return <motion.div initial={{opacity:0,y:reduced?0:14}} animate={{opacity:1,y:0}} transition={{duration:0.35}}>{children}</motion.div> }
