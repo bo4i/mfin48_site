@@ -1,3 +1,3 @@
-import { BudgetChart, Fade, PageHero } from '../components/ui'
+import { BudgetChart, Card, Fade, PageHero, SectionHeader } from '../components/ui'
 
-export const BudgetExecutionPage = () => <Fade><div className='space-y-4'><PageHero title='Исполнение бюджета' description='Ежеквартальные отчеты и динамика исполнения.' /><BudgetChart title='Исполнение по кварталам' /></div></Fade>
+export const BudgetExecutionPage = () => <Fade><div className='space-y-6'><PageHero title='Исполнение бюджета' description='Ежеквартальные отчеты, динамика кассового исполнения и KPI результативности.' /><SectionHeader title='Отчеты по кварталам' /><div className='grid gap-4 md:grid-cols-2'><BudgetChart title='Исполнение доходов по кварталам' /><BudgetChart title='Исполнение расходов по кварталам' /></div><Card><h3 className='font-bold'>Ключевые KPI</h3><p className='text-sm text-slate-600'>Своевременность доведения лимитов, доля контрактов в срок, уровень кассового исполнения по госпрограммам.</p></Card></div></Fade>
